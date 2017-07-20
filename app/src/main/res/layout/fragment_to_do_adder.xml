@@ -29,4 +29,10 @@
         android:layout_weight=".1"
         android:text="Add" />
 
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/category_array"
+        android:id="@+id/spinner"/>
+
 </LinearLayout>

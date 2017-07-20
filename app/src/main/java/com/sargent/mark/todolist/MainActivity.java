@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements AddToDoFragment.O
     private FloatingActionButton button;
     private DBHelper helper;
     private Cursor cursor;
-    private SQLiteDatabase db;
+    private static SQLiteDatabase db;
     ToDoListAdapter adapter;
     private final String TAG = "mainactivity";
 
@@ -200,10 +200,9 @@ public class MainActivity extends AppCompatActivity implements AddToDoFragment.O
         return db.update(Contract.TABLE_TODO.TABLE_NAME, cv, Contract.TABLE_TODO._ID + "=" + id, null);
     }
 
-    public int updateIsDone(boolean isDone, long id){
+    public static int updateIsDone(boolean isDone, long id){
         ContentValues cv = new ContentValues();
         cv.put(Contract.TABLE_TODO.COLUMN_NAME_IS_DONE, isDone);
-
         return db.update(Contract.TABLE_TODO.TABLE_NAME, cv, Contract.TABLE_TODO._ID + "=" + id, null);
     }
 

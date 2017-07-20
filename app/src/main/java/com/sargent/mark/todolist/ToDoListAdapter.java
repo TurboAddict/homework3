@@ -13,6 +13,9 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.sargent.mark.todolist.data.Contract;
+import com.sargent.mark.todolist.data.DBHelper;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by mark on 7/4/17.
@@ -23,6 +26,8 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ItemHo
     private Cursor cursor;
     private ItemClickListener listener;
     private String TAG = "todolistadapter";
+    private DBHelper helper;
+    private SQLiteDatabase db;
 
     @Override
     public ItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -31,7 +36,6 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ItemHo
 
         View view = inflater.inflate(R.layout.item, parent, false);
         ItemHolder holder = new ItemHolder(view);
-
         return holder;
     }
 
@@ -66,6 +70,7 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ItemHo
     class ItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView descr;
         TextView due;
+        TextView cat;
         String duedate;
         String description;
         String category;
@@ -77,6 +82,7 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ItemHo
             descr = (TextView) view.findViewById(R.id.description);
             due = (TextView) view.findViewById(R.id.dueDate);
             cb = (CheckBox) view.findViewById(R.id.checkBox);
+            cat = (TextView) view.findViewById(R.id.category);
             view.setOnClickListener(this);
         }
 
@@ -85,11 +91,19 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ItemHo
             id = cursor.getLong(cursor.getColumnIndex(Contract.TABLE_TODO._ID));
             Log.d(TAG, "deleting id: " + id);
 
+            //Query the database, Checks if isDone is true, if so, check the checkbox
+            if(cursor.getString(cursor.getColumnIndex(Contract.TABLE_TODO.COLUMN_NAME_IS_DONE)).equals("1"))
+                cb.setChecked(true);
+            else
+                cb.setChecked(false);
+
             duedate = cursor.getString(cursor.getColumnIndex(Contract.TABLE_TODO.COLUMN_NAME_DUE_DATE));
             description = cursor.getString(cursor.getColumnIndex(Contract.TABLE_TODO.COLUMN_NAME_DESCRIPTION));
             category = cursor.getString(cursor.getColumnIndex(Contract.TABLE_TODO.COLUMN_NAME_CATEGORY));
             descr.setText(description);
             due.setText(duedate);
+            cat.setText(category);
+
             holder.itemView.setTag(id);
 
             //Handles actions for checkbox
@@ -97,16 +111,11 @@ public class ToDoListAdapter extends RecyclerView.Adapter<ToDoListAdapter.ItemHo
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if(isChecked) {
-                        //MainActivity.updateIsDone(db, true, id);
-
-                        Log.d("maxx", "true");
+                        MainActivity.updateIsDone(true, id);
 
                     } else {
-                        //MainActivity.updateIsDone(db, false, id);
-                        Log.d("maxx", "true");
+                        MainActivity.updateIsDone(false, id);
                     }
-
-
                 }
             });
         }
